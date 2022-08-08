@@ -5,8 +5,11 @@ import configureStore from 'redux-mock-store';
 import reducer, {
   setRegions,
   selectRegion,
+  statusSelector,
   loadRegions,
 } from './regionsSlice';
+
+import STATUS from '../../constants/status';
 
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
@@ -18,8 +21,10 @@ describe('regionsSlice', () => {
 
   it('has initial state', () => {
     expect(reducer(undefined, { type: 'regions/action' })).toEqual({
+      status: STATUS.IDLE,
       regions: [],
       selectedRegion: null,
+      error: null,
     });
   });
 
@@ -55,6 +60,14 @@ describe('regionsSlice', () => {
         name: '서울',
       });
     });
+  });
+
+  describe('statusSelector', () => {
+    const state = {
+      regions: { status: '' },
+    };
+
+    expect(statusSelector(state)).toBe('');
   });
 
   describe('loadRegions', () => {
