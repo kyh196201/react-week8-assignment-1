@@ -8,10 +8,13 @@ import {
   regionsSelector,
   selectedRegionSelector,
   selectRegion,
-  loadRegions,
+  getRegions,
+  statusSelector,
 } from './regionsSlice';
 
 import { loadRestaurants } from '../restaurants/restaurantsSlice';
+
+import STATUS from '../../constants/status';
 
 const Container = styled.div({
   marginBottom: '1rem',
@@ -54,12 +57,15 @@ const Message = styled.p({
 export default function RegionsContainer() {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(loadRegions());
-  }, []);
-
   const regions = useSelector(regionsSelector);
   const selectedRegion = useSelector(selectedRegionSelector);
+  const status = useSelector(statusSelector);
+
+  useEffect(() => {
+    if (status === STATUS.IDLE) {
+      dispatch(getRegions());
+    }
+  }, [status, dispatch]);
 
   const handleClick = (regionId) => {
     dispatch(selectRegion({ regionId }));
@@ -74,35 +80,59 @@ export default function RegionsContainer() {
     return selectedRegion.id === regionId;
   };
 
-  if (!regions?.length) {
-    return (
+  let content = '';
+
+  if (status === STATUS.LOADING) {
+    content = (
+      <Message>
+        loading...
+      </Message>
+    );
+  }
+
+  if (status === STATUS.FAILED) {
+    content = (
       <Message>
         지역 목록을 조회하지 못했습니다.
       </Message>
     );
   }
 
+  if (status === STATUS.SUCCEDED) {
+    if (!regions?.length) {
+      content = (
+        <Message>
+          지역 목록을 조회하지 못했습니다.
+        </Message>
+      );
+    } else {
+      content = (
+        <List>
+          {regions.map((region) => (
+            <Item key={region.id}>
+              <MenuButton
+                selected={isSelected(region.id)}
+                type="button"
+                onClick={() => handleClick(region.id)}
+              >
+                {region.name}
+                {selectedRegion ? (
+                  <>
+                    {isSelected(region.id) ? '(V)' : null}
+                  </>
+                ) : null}
+              </MenuButton>
+            </Item>
+          ))}
+        </List>
+      );
+    }
+  }
+
   return (
     <Container>
       <Title>지역 목록</Title>
-      <List>
-        {regions.map((region) => (
-          <Item key={region.id}>
-            <MenuButton
-              selected={isSelected(region.id)}
-              type="button"
-              onClick={() => handleClick(region.id)}
-            >
-              {region.name}
-              {selectedRegion ? (
-                <>
-                  {isSelected(region.id) ? '(V)' : null}
-                </>
-              ) : null}
-            </MenuButton>
-          </Item>
-        ))}
-      </List>
+      { content }
     </Container>
   );
 }
