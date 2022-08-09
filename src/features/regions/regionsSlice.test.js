@@ -10,6 +10,8 @@ import reducer, {
   getRegions,
 } from './regionsSlice';
 
+import { fetchRegions } from '../../services/api';
+
 import STATUS from '../../constants/status';
 
 const middlewares = [thunk];
@@ -74,6 +76,8 @@ describe('regionsSlice', () => {
   describe('loadRegions', () => {
     beforeEach(() => {
       store = mockStore({});
+
+      fetchRegions.mockResolvedValue([]);
     });
 
     it('dispatches setRegions', async () => {
@@ -95,7 +99,11 @@ describe('regionsSlice', () => {
     });
 
     context('when success', () => {
-      it('calls actions', async () => {
+      beforeEach(() => {
+        fetchRegions.mockResolvedValue([]);
+      });
+
+      it('calls pending and fulfilled actions', async () => {
         await store.dispatch(getRegions());
 
         const actions = store.getActions();
@@ -105,6 +113,23 @@ describe('regionsSlice', () => {
         expect(actions[1]).toEqual(expect.objectContaining({
           payload: [],
         }));
+      });
+    });
+
+    context('when failed', () => {
+      beforeEach(() => {
+        fetchRegions.mockRejectedValue(new Error('조회에 실패했습니다.'));
+      });
+
+      it('calls pending and rejected actions', async () => {
+        await store.dispatch(getRegions());
+
+        const actions = store.getActions();
+
+        expect(actions).toHaveLength(2);
+        expect(actions[0].type).toEqual(getRegions.pending.type);
+        expect(actions[1].type).toEqual(getRegions.rejected.type);
+        expect(actions[1].error).not.toBeNull();
       });
     });
   });

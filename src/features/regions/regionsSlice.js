@@ -52,7 +52,7 @@ const slice = createSlice({
 
     builder.addCase(getRegions.rejected, (state, action) => ({
       ...state,
-      error: action.payload,
+      error: action.error,
       status: STATUS.FAILED,
     }));
   },
