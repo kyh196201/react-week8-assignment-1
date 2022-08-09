@@ -132,5 +132,39 @@ describe('regionsSlice', () => {
         expect(actions[1].error.message).toBe('조회에 실패했습니다.');
       });
     });
+
+    describe('getRegions fulfilled action', () => {
+      it('changes regions', () => {
+        const state = reducer({
+          regions: null,
+        }, getRegions.fulfilled([]));
+
+        expect(state.regions).toEqual([]);
+      });
+    });
+
+    describe('getRegions pending action', () => {
+      it('changes status', () => {
+        const prevState = {
+          status: '',
+        };
+
+        const state = reducer(prevState, getRegions.pending());
+
+        expect(state.status).toEqual(STATUS.LOADING);
+      });
+    });
+
+    describe('getRegions rejected action', () => {
+      it('changes error', () => {
+        const prevState = {
+          error: null,
+        };
+
+        const state = reducer(prevState, getRegions.rejected('message'));
+
+        expect(state.error.message).toEqual('message');
+      });
+    });
   });
 });
