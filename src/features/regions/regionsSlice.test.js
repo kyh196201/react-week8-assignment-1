@@ -129,7 +129,7 @@ describe('regionsSlice', () => {
         expect(actions).toHaveLength(2);
         expect(actions[0].type).toEqual(getRegions.pending.type);
         expect(actions[1].type).toEqual(getRegions.rejected.type);
-        expect(actions[1].error).not.toBeNull();
+        expect(actions[1].error.message).toBe('조회에 실패했습니다.');
       });
     });
   });

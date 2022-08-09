@@ -7,9 +7,16 @@ import { equal } from '../../utils';
 import STATUS from '../../constants/status';
 
 export const getRegions = createAsyncThunk('regions/getRegions', async () => {
-  const regions = await fetchRegions();
+  try {
+    const regions = await fetchRegions();
+    return regions;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error.message;
+    }
 
-  return regions;
+    throw error;
+  }
 });
 
 const slice = createSlice({
