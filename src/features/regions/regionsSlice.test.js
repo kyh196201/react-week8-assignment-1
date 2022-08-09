@@ -7,6 +7,7 @@ import reducer, {
   selectRegion,
   statusSelector,
   loadRegions,
+  getRegions,
 } from './regionsSlice';
 
 import STATUS from '../../constants/status';
@@ -81,6 +82,30 @@ describe('regionsSlice', () => {
       const actions = store.getActions();
 
       expect(actions[0]).toEqual(setRegions([]));
+    });
+  });
+
+  describe('getRegions', () => {
+    beforeEach(() => {
+      store = mockStore({
+        regions: {
+          regions: [],
+        },
+      });
+    });
+
+    context('when success', () => {
+      it('calls actions', async () => {
+        await store.dispatch(getRegions());
+
+        const actions = store.getActions();
+
+        expect(actions).toHaveLength(2);
+        expect(actions[0].type).toEqual(getRegions.pending.type);
+        expect(actions[1]).toEqual(expect.objectContaining({
+          payload: [],
+        }));
+      });
     });
   });
 });
