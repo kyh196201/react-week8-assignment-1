@@ -4,6 +4,8 @@ import { render, fireEvent } from '@testing-library/react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import STATUS from '../../constants/status';
+
 import RestaurantsPage from './RestaurantsPage';
 
 const mockPush = jest.fn();
@@ -25,6 +27,7 @@ describe('RestaurantsPage', () => {
 
     useSelector.mockImplementation((selector) => selector({
       regions: {
+        status: STATUS.SUCCEDED,
         regions: [
           { id: 1, name: '서울' },
         ],

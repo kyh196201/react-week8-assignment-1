@@ -10,6 +10,8 @@ import { setAccessToken } from '../features/login/loginSlice';
 
 import { loadItem } from '../services/storage';
 
+import STATUS from '../constants/status';
+
 import App from './App';
 
 jest.mock('react-redux');
@@ -25,6 +27,7 @@ describe('App', () => {
 
     useSelector.mockImplementation((selector) => selector({
       regions: {
+        status: STATUS.SUCCEDED,
         regions: [
           { id: 1, name: '서울' },
         ],
