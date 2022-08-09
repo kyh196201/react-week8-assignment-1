@@ -14,21 +14,36 @@ import RESTAURANT from '../../fixtures/restaurant';
 import ACCESS_TOKEN from '../../fixtures/access-token';
 
 describe('api', () => {
-  const mockFetch = (data) => {
+  const mockFetch = (data, status = true) => {
     global.fetch = jest.fn().mockResolvedValue({
+      ok: status,
       async json() { return data; },
     });
   };
 
   describe('fetchRegions', () => {
-    beforeEach(() => {
-      mockFetch(REGIONS);
+    context('when success', () => {
+      beforeEach(() => {
+        mockFetch(REGIONS);
+      });
+
+      it('returns regions', async () => {
+        const regions = await fetchRegions();
+
+        expect(regions).toEqual(REGIONS);
+      });
     });
 
-    it('returns regions', async () => {
-      const regions = await fetchRegions();
+    context('when failed', () => {
+      beforeEach(() => {
+        mockFetch(REGIONS, false);
+      });
 
-      expect(regions).toEqual(REGIONS);
+      it('throws "지역 목록 조회에 실패했습니다." message', async () => {
+        await expect(async () => {
+          await fetchRegions();
+        }).rejects.toThrow('지역 목록 조회에 실패했습니다.');
+      });
     });
   });
 
